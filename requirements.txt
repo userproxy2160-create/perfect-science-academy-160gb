@@ -1,5 +1,4 @@
-Django>=4.2,<5.0
+Flask
 gunicorn
-whitenoise
-psycopg2-binary
 python-decouple
+Werkzeug
