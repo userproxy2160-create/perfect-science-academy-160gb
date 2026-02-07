@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>{% block title %}Academy Management{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="page-wrapper">
+        {% if request.endpoint != 'login' %}
+        <nav class="navbar">
+            <div class="nav-brand">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ48MpSWa8L2X2Tisxdthuqe3NZQ7dOw5q-Cw&s" alt="PSA Logo" class="nav-logo">
+                <span>Perfect Science Academy</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li><a href="{{ url_for('students') }}" class="nav-link {% if request.endpoint == 'students' %}active{% endif %}">Students</a></li>
+                <li><a href="{{ url_for('teachers') }}" class="nav-link {% if request.endpoint == 'teachers' %}active{% endif %}">Teachers</a></li>
+                <li><a href="{{ url_for('reports') }}" class="nav-link {% if request.endpoint == 'reports' %}active{% endif %}">Reports</a></li>
+                <li><a href="{{ url_for('reminders') }}" class="nav-link {% if request.endpoint == 'reminders' %}active{% endif %}">Reminders</a></li>
+                <li><a href="{{ url_for('change_password') }}" class="nav-link {% if request.endpoint == 'change_password' %}active{% endif %}">Change Password</a></li>
+                <li><a href="{{ url_for('logout') }}" class="nav-link logout">Logout</a></li>
+            </ul>
+            <div class="sound-toggle">
+                <button id="soundToggle" class="btn-icon" title="Toggle Sound">
+                    <span id="soundIcon">🔊</span>
+                </button>
+            </div>
+        </nav>
+        {% endif %}
+        
+        <main class="main-content fade-in">
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer class="app-footer">
+            <p>Created by Abdul Rehman</p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/sounds.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navbar-scroll.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

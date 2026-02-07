@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Perfect Science Academy - Best Coaching in Gojra</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage.css') }}">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="logo-section">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ48MpSWa8L2X2Tisxdthuqe3NZQ7dOw5q-Cw&s" alt="PSA Logo" class="nav-logo">
+                <div>
+                    <h1 class="academy-name">Perfect Science Academy</h1>
+                    <p class="tagline">Excellence in Education Since Establishment</p>
+                </div>
+            </div>
+            <a href="{{ url_for('login') }}" class="admin-login-btn">Admin Login</a>
+        </div>
+    </nav>
+
+    <!-- Announcement Banner -->
+    <section class="announcement-banner">
+        <div class="announcement-content">
+            <h2 class="announcement-title">ADMISSIONS OPEN - ENROLL NOW!</h2>
+            <div class="announcement-badges">
+                <span class="badge badge-highlight">NO ADMISSION FEE</span>
+                <span class="badge badge-success">Most Affordable & Best in Town</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Banners Slider -->
+    <section class="banners-section">
+        <div class="banner-slider">
+            
+            <div class="banner-slide">
+                <img src="https://scontent.fisb1-2.fna.fbcdn.net/v/t39.30808-6/499545781_688214623966920_2010979814940518859_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeEggrE4UUtTbrG7gz2YIU6gmKsx5Hif40OYqzHkeJ_jQ3Tr-EnDZFlwUGB8FnPgpHAjdGiae8RDIz3EU1JetR8C&_nc_ohc=iufj8HobNe8Q7kNvwH62E8E&_nc_oc=Adm_E2vi0V0b82SFUzOL6rwivlQGJZAqXYXNQ_kBHmCjyM1hoEkUeJBvooYjQttZLiw&_nc_zt=23&_nc_ht=scontent.fisb1-2.fna&_nc_gid=msz_AvNaZTYfmN0h1vDBeg&oh=00_AfuAP7w16pRlC8aba3m_fhvgsej0znrouuLGGWfFI-QONw&oe=698CF166" alt="Perfect Science Academy Banner 3">
+            </div>
+        </div>
+        <button class="slider-btn prev" onclick="changeSlide(-1)">‹</button>
+        <button class="slider-btn next" onclick="changeSlide(1)">›</button>
+        <div class="slider-dots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Perfect Science Academy?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Quality Education</h3>
+                    <p>Experienced and dedicated teachers committed to student success</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Affordable Fees</h3>
+                    <p>No admission fee - Most affordable coaching center in Gojra</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Classes 5th to 12th</h3>
+                    <p>Comprehensive education for all secondary levels</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Convenient Timing</h3>
+                    <p>Evening classes from 3:00 PM to 7:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Get in Touch</h2>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h3>Visit Us</h3>
+                    <p>160 GB Kaleki, Gojra</p>
+                    <p>Toba Tek Singh, Punjab</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Call Us</h3>
+                    <p><a href="tel:03457574147">0345 7574147</a></p>
+                    <p><a href="tel:03464850171">0346 4850171</a></p>
+                    <p class="note">WhatsApp Available</p>
+                </div>
+                <div class="contact-card">
+                    <h3>Email Us</h3>
+                    <p><a href="mailto:psa160gb@gmail.com">psa160gb@gmail.com</a></p>
+                </div>
+                <div class="contact-card">
+                    <h3>Class Timings</h3>
+                    <p>3:00 PM - 7:00 PM</p>
+                    <p>Monday to Saturday</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Contact Buttons -->
+    <section class="quick-contact">
+        <div class="container">
+            <h3>Enroll Your Child Today</h3>
+            <div class="contact-buttons">
+                <a href="https://wa.me/923457574147" class="contact-btn whatsapp-btn" target="_blank">
+                    Contact via WhatsApp
+                </a>
+                <a href="tel:03457574147" class="contact-btn call-btn">
+                    Call Now
+                </a>
+                <a href="https://www.facebook.com/PSA160" class="contact-btn facebook-btn" target="_blank">
+                    Visit Facebook Page
+                </a>
+                <a href="mailto:psa160gb@gmail.com" class="contact-btn email-btn">
+                    Send Email
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Perfect Science Academy</h4>
+                    <p>Most Affordable & Best in Town</p>
+                    <p>160 GB Kaleki, Gojra, Toba Tek Singh</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{{ url_for('login') }}">Admin Portal</a></li>
+                        <li><a href="https://www.facebook.com/PSA160" target="_blank">Facebook</a></li>
+                        <li><a href="https://www.facebook.com/messages/t/PSA160/" target="_blank">Messenger</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Information</h4>
+                    <p>Phone: 0345 7574147, 0346 4850171</p>
+                    <p>Email: psa160gb@gmail.com</p>
+                    <p>Timing: 3:00 PM - 7:00 PM</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Perfect Science Academy. All rights reserved.</p>
+                <p>Created by Abdul Rehman</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.banner-slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function showSlide(index) {
+            if (index >= slides.length) currentSlideIndex = 0;
+            if (index < 0) currentSlideIndex = slides.length - 1;
+
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            showSlide(currentSlideIndex);
+        }
+
+        function currentSlide(index) {
+            currentSlideIndex = index;
+            showSlide(currentSlideIndex);
+        }
+
+        // Auto-slide every 5 seconds
+        setInterval(() => {
+            currentSlideIndex++;
+            showSlide(currentSlideIndex);
+        }, 5000);
+    </script>
+</body>
+</html>
+    <script>
+        // Homepage navbar scroll behavior
+        (function() {
+            let lastScrollTop = 0;
+            let scrollThreshold = 5;
+            let isScrolling;
+            const navbar = document.querySelector('.top-nav');
+            
+            if (!navbar) return;
+            
+            window.addEventListener('scroll', function() {
+                window.clearTimeout(isScrolling);
+                
+                isScrolling = setTimeout(function() {
+                    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    if (scrollTop < 10) {
+                        navbar.classList.remove('navbar-minimal');
+                        navbar.classList.remove('navbar-hidden');
+                        lastScrollTop = scrollTop;
+                        return;
+                    }
+                    
+                    if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
+                        if (scrollTop > lastScrollTop) {
+                            navbar.classList.add('navbar-minimal');
+                            
+                            if (window.innerWidth <= 768 && scrollTop > 200) {
+                                navbar.classList.add('navbar-hidden');
+                            }
+                        } else {
+                            navbar.classList.remove('navbar-minimal');
+                            navbar.classList.remove('navbar-hidden');
+                        }
+                        
+                        lastScrollTop = scrollTop;
+                    }
+                }, 50);
+            }, false);
+            
+            document.addEventListener('mousemove', function(e) {
+                if (e.clientY < 100) {
+                    navbar.classList.remove('navbar-hidden');
+                }
+            });
+            
+            let touchStartY = 0;
+            document.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                let touchY = e.touches[0].clientY;
+                if (touchStartY < 100 && touchY > touchStartY) {
+                    navbar.classList.remove('navbar-hidden');
+                }
+            });
+        })();
+    </script>

@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block title %}Teachers - Academy Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Teacher Management</h1>
+        <button class="btn btn-primary" onclick="openAddModal()">+ Add Teacher</button>
+    </div>
+    
+    <div class="table-scroll-hint">
+        ← Swipe left/right to see all columns →
+    </div>
+    
+    <div class="table-container card-enter">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Monthly Salary</th>
+                    <th>Paid Months</th>
+                    <th>Pending Months</th>
+                    <th>Total Paid</th>
+                    <th>Pending Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                <tr>
+                    <td>{{ teacher.name }}</td>
+                    <td>Rs. {{ "%.2f"|format(teacher.monthly_salary) }}</td>
+                    <td>{{ teacher.paid_months }}</td>
+                    <td {% if teacher.pending_months > 0 %}class="pending-pulse"{% endif %}>
+                        {{ teacher.pending_months }}
+                    </td>
+                    <td>Rs. {{ "%.2f"|format(teacher.total_paid) }}</td>
+                    <td {% if teacher.pending_amount > 0 %}class="pending-pulse"{% endif %}>
+                        Rs. {{ "%.2f"|format(teacher.pending_amount) }}
+                    </td>
+                    <td class="action-buttons">
+                        <button class="btn-icon btn-edit" onclick="openEditModal({{ teacher.id }}, '{{ teacher.name|replace("'", "\\'") }}', {{ teacher.monthly_salary }})" title="Edit Teacher">Edit</button>
+                        <button class="btn-icon btn-payment" onclick="openPaymentModal({{ teacher.id }}, '{{ teacher.name|replace("'", "\\'") }}')" title="Pay Salary">Payment</button>
+                        <button class="btn-icon btn-receipt" onclick="openReceiptMenu({{ teacher.id }}, '{{ teacher.name|replace("'", "\\'") }}')" title="Receipt Options">Receipt</button>
+                        <button class="btn-icon btn-delete" onclick="deleteTeacher({{ teacher.id }}, '{{ teacher.name|replace("'", "\\'") }}')" title="Delete Teacher">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content modal-slide-in">
+        <div class="modal-header">
+            <h2>Add New Teacher</h2>
+            <button class="close-btn" onclick="closeModal('addModal')">&times;</button>
+        </div>
+        <form id="addForm">
+            <div class="form-group">
+                <label for="addName">Teacher Name</label>
+                <input type="text" id="addName" name="name" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label for="addSalary">Monthly Salary (Rs.)</label>
+                <input type="number" id="addSalary" name="monthly_salary" class="form-input" step="0.01" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Teacher</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Teacher Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content modal-slide-in">
+        <div class="modal-header">
+            <h2>Edit Teacher</h2>
+            <button class="close-btn" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="editId">
+            <div class="form-group">
+                <label for="editName">Teacher Name</label>
+                <input type="text" id="editName" name="name" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label for="editSalary">Monthly Salary (Rs.)</label>
+                <input type="number" id="editSalary" name="monthly_salary" class="form-input" step="0.01" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content modal-slide-in">
+        <div class="modal-header">
+            <h2>Record Salary Payment</h2>
+            <button class="close-btn" onclick="closeModal('paymentModal')">&times;</button>
+        </div>
+        <form id="paymentForm">
+            <input type="hidden" id="paymentTeacherId">
+            <div class="form-group">
+                <label>Teacher: <strong id="paymentTeacherName"></strong></label>
+            </div>
+            <div class="form-group">
+                <label for="paymentAmount">Amount (Rs.)</label>
+                <input type="number" id="paymentAmount" name="amount" class="form-input" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="monthYear">Month/Year</label>
+                <input type="month" id="monthYear" name="month_year" class="form-input" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('paymentModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Record Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Receipt Menu Modal -->
+<div id="receiptMenuModal" class="modal">
+    <div class="modal-content modal-slide-in" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2>Receipt Options</h2>
+            <button class="close-btn" onclick="closeModal('receiptMenuModal')">&times;</button>
+        </div>
+        <div style="padding: 1rem 0;">
+            <p style="margin-bottom: 1.5rem; color: var(--text-light);">
+                Teacher: <strong id="receiptTeacherName"></strong>
+            </p>
+            <input type="hidden" id="receiptTeacherId">
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button class="btn btn-primary" onclick="printReceipt()" style="width: 100%;">
+                    Print Receipt
+                </button>
+                <button class="btn btn-secondary" onclick="downloadReceipt()" style="width: 100%;">
+                    Download PDF
+                </button>
+                <button class="btn btn-accent" onclick="closeModal('receiptMenuModal')" style="width: 100%;">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openAddModal() {
+    playSound('click');
+    document.getElementById('addModal').classList.add('active');
+}
+
+function openEditModal(id, name, salary) {
+    playSound('click');
+    document.getElementById('editId').value = id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editSalary').value = salary;
+    document.getElementById('editModal').classList.add('active');
+}
+
+function openPaymentModal(id, name) {
+    playSound('click');
+    document.getElementById('paymentTeacherId').value = id;
+    document.getElementById('paymentTeacherName').textContent = name;
+    const today = new Date();
+    document.getElementById('monthYear').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    document.getElementById('paymentModal').classList.add('active');
+}
+
+function closeModal(modalId) {
+    playSound('click');
+    document.getElementById(modalId).classList.remove('active');
+}
+
+function openReceiptMenu(id, name) {
+    playSound('click');
+    document.getElementById('receiptTeacherId').value = id;
+    document.getElementById('receiptTeacherName').textContent = name;
+    document.getElementById('receiptMenuModal').classList.add('active');
+}
+
+function printReceipt() {
+    playSound('click');
+    const id = document.getElementById('receiptTeacherId').value;
+    
+    if (!id) {
+        alert('Error: Teacher ID not found');
+        return;
+    }
+    
+    // Open in new window
+    const newWindow = window.open(`/teachers/${id}/receipt`, '_blank');
+    
+    if (!newWindow) {
+        alert('Please allow popups for this site!');
+    }
+    
+    closeModal('receiptMenuModal');
+}
+
+function downloadReceipt() {
+    playSound('click');
+    const id = document.getElementById('receiptTeacherId').value;
+    
+    if (!id) {
+        alert('Error: Teacher ID not found');
+        return;
+    }
+    
+    // Create a link and click it
+    const a = document.createElement('a');
+    a.href = `/teachers/${id}/receipt`;
+    a.target = '_blank';
+    a.download = 'receipt.pdf';
+    document.body.appendChild(a);
+    a.click();
+    
+    setTimeout(() => {
+        document.body.removeChild(a);
+    }, 100);
+    
+    closeModal('receiptMenuModal');
+}
+
+async function deleteTeacher(id, name) {
+    if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+    
+    playSound('click');
+    
+    try {
+        const response = await fetch(`/teachers/delete/${id}`, { method: 'POST' });
+        const data = await response.json();
+        
+        if (data.success) {
+            playSound('success');
+            location.reload();
+        }
+    } catch (error) {
+        playSound('error');
+        alert('An error occurred');
+    }
+}
+
+document.getElementById('addForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    playSound('click');
+    
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await fetch('/teachers/add', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            playSound('success');
+            location.reload();
+        }
+    } catch (error) {
+        playSound('error');
+        alert('An error occurred');
+    }
+});
+
+document.getElementById('editForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    playSound('click');
+    
+    const id = document.getElementById('editId').value;
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await fetch(`/teachers/edit/${id}`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            playSound('success');
+            location.reload();
+        }
+    } catch (error) {
+        playSound('error');
+        alert('An error occurred');
+    }
+});
+
+document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    playSound('click');
+    
+    const id = document.getElementById('paymentTeacherId').value;
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await fetch(`/teachers/${id}/payment`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            playSound('success');
+            location.reload();
+        }
+    } catch (error) {
+        playSound('error');
+        alert('An error occurred');
+    }
+});
+</script>
+{% endblock %}

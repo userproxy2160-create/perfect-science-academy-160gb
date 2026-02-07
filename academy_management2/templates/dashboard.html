@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Academy Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Dashboard</h1>
+    
+    <div class="stats-grid">
+        <div class="stat-card card-enter" style="animation-delay: 0.1s">
+            <div class="stat-info">
+                <div class="stat-label">Total Students</div>
+                <div class="stat-value">{{ total_students }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card card-enter" style="animation-delay: 0.2s">
+            <div class="stat-info">
+                <div class="stat-label">Total Teachers</div>
+                <div class="stat-value">{{ total_teachers }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card card-enter" style="animation-delay: 0.3s">
+            <div class="stat-info">
+                <div class="stat-label">Total Fee Collected</div>
+                <div class="stat-value">Rs. {{ "%.2f"|format(total_collected) }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card card-enter" style="animation-delay: 0.4s">
+            <div class="stat-info">
+                <div class="stat-label">Salaries Paid</div>
+                <div class="stat-value">Rs. {{ "%.2f"|format(total_salaries_paid) }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card card-enter" style="animation-delay: 0.5s">
+            <h3>Monthly Fee Collection Trend</h3>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+        
+        <div class="chart-card card-enter" style="animation-delay: 0.6s">
+            <h3>Class-wise Fee Collection</h3>
+            <canvas id="classChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="charts-grid">
+        <div class="chart-card card-enter" style="animation-delay: 0.7s">
+            <h3>Fee Status Overview</h3>
+            <canvas id="statusChart"></canvas>
+        </div>
+        
+        <div class="chart-card card-enter" style="animation-delay: 0.8s">
+            <h3>Income vs Expenses</h3>
+            <canvas id="incomeChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="quick-actions card-enter" style="animation-delay: 0.9s">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="{{ url_for('students') }}" class="btn btn-primary">
+                Manage Students
+            </a>
+            <a href="{{ url_for('teachers') }}" class="btn btn-secondary">
+                Manage Teachers
+            </a>
+            <a href="{{ url_for('reports') }}" class="btn btn-accent">
+                View Reports
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// Sample data - you can fetch this from backend later
+const monthlyData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [{
+        label: 'Fee Collected (Rs.)',
+        data: [{{ total_collected * 0.12 }}, {{ total_collected * 0.15 }}, {{ total_collected * 0.18 }}, {{ total_collected * 0.20 }}, {{ total_collected * 0.17 }}, {{ total_collected * 0.18 }}],
+        borderColor: '#2563EB',
+        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+        tension: 0.4,
+        fill: true
+    }]
+};
+
+const monthlyChart = new Chart(document.getElementById('monthlyChart'), {
+    type: 'line',
+    data: monthlyData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return 'Rs. ' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Class-wise Chart
+const classChart = new Chart(document.getElementById('classChart'), {
+    type: 'bar',
+    data: {
+        labels: ['5th', '6th', '7th', '8th', '9th', '10th'],
+        datasets: [{
+            label: 'Collection (Rs.)',
+            data: [{{ (total_collected * 0.15)|int }}, {{ (total_collected * 0.18)|int }}, {{ (total_collected * 0.12)|int }}, {{ (total_collected * 0.20)|int }}, {{ (total_collected * 0.16)|int }}, {{ (total_collected * 0.19)|int }}],
+            backgroundColor: [
+                'rgba(37, 99, 235, 0.8)',
+                'rgba(5, 150, 105, 0.8)',
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(168, 85, 247, 0.8)',
+                'rgba(236, 72, 153, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Status Pie Chart
+const statusChart = new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Collected', 'Pending'],
+        datasets: [{
+            data: [{{ total_collected }}, {{ total_collected * 0.30 }}],
+            backgroundColor: [
+                'rgba(5, 150, 105, 0.8)',
+                'rgba(239, 68, 68, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Income vs Expenses
+const incomeChart = new Chart(document.getElementById('incomeChart'), {
+    type: 'bar',
+    data: {
+        labels: ['This Month'],
+        datasets: [{
+            label: 'Income',
+            data: [{{ total_collected * 0.20 }}],
+            backgroundColor: 'rgba(5, 150, 105, 0.8)'
+        }, {
+            label: 'Expenses',
+            data: [{{ total_salaries_paid * 0.20 }}],
+            backgroundColor: 'rgba(239, 68, 68, 0.8)'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return 'Rs. ' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

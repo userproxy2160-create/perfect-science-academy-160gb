@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Fee Reminders - Academy Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Fee Reminders & Defaulters</h1>
+        <button class="btn btn-secondary" onclick="window.print()">Print List</button>
+    </div>
+    
+    <div class="reminder-stats stats-grid">
+        <div class="stat-card card-enter">
+            <div class="stat-info">
+                <div class="stat-label">Students with Pending Fees</div>
+                <div class="stat-value" style="color: var(--accent);">{{ defaulters|length }}</div>
+            </div>
+        </div>
+        
+        <div class="stat-card card-enter" style="animation-delay: 0.1s">
+            <div class="stat-info">
+                <div class="stat-label">Total Pending Amount</div>
+                <div class="stat-value" style="color: var(--accent);">Rs. {{ "%.2f"|format(total_pending) }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="table-container card-enter" style="animation-delay: 0.2s">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Class</th>
+                    <th>Monthly Fee</th>
+                    <th>Pending Months</th>
+                    <th>Pending Amount</th>
+                    <th>Last Payment</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in defaulters %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.class }}</td>
+                    <td>Rs. {{ "%.2f"|format(student.monthly_fee) }}</td>
+                    <td class="pending-pulse">{{ student.pending_months }}</td>
+                    <td class="pending-pulse">Rs. {{ "%.2f"|format(student.pending_amount) }}</td>
+                    <td>{{ student.last_payment or 'No payments' }}</td>
+                    <td>
+                        {% if student.pending_months >= 3 %}
+                        <span class="status-badge status-critical">Critical</span>
+                        {% elif student.pending_months >= 2 %}
+                        <span class="status-badge status-warning">Warning</span>
+                        {% else %}
+                        <span class="status-badge status-due">Due</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="reminder-actions card-enter" style="animation-delay: 0.3s">
+        <h3>Quick Actions</h3>
+        <p style="color: var(--text-light); margin-bottom: 1rem;">
+            Send reminders to students with pending fees via SMS, Email, or WhatsApp
+        </p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="alert('SMS reminder feature coming soon!')">
+                Send SMS Reminders
+            </button>
+            <button class="btn btn-secondary" onclick="alert('Email reminder feature coming soon!')">
+                Send Email Reminders
+            </button>
+            <button class="btn btn-accent" onclick="window.print()">
+                Print Defaulter List
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+.reminder-stats {
+    margin-bottom: 2rem;
+}
+
+.reminder-actions {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin-top: 2rem;
+}
+
+.reminder-actions h3 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-critical {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.status-warning {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-due {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+@media print {
+    .navbar, .btn, .reminder-actions, .app-footer {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+    
+    .status-badge {
+        border: 1px solid #000;
+    }
+}
+</style>
+{% endblock %}

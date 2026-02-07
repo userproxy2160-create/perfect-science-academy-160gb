@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}Students - Academy Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">Student Management</h1>
+        <button class="btn btn-primary" onclick="openAddModal()">+ Add Student</button>
+    </div>
+    
+    <div class="filters card-enter">
+        <label for="classFilter">Filter by Class:</label>
+        <select id="classFilter" class="form-select" onchange="filterByClass()">
+            <option value="">All Classes</option>
+            {% for class in classes %}
+            <option value="{{ class }}" {% if selected_class == class %}selected{% endif %}>{{ class }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="table-scroll-hint">
+        ← Swipe left/right to see all columns →
+    </div>
+    
+    <div class="table-container card-enter" style="animation-delay: 0.1s">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Class</th>
+                    <th>Monthly Fee</th>
+                    <th>Paid Months</th>
+                    <th>Pending Months</th>
+                    <th>Total Paid</th>
+                    <th>Pending Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.class }}</td>
+                    <td>Rs. {{ "%.2f"|format(student.monthly_fee) }}</td>
+                    <td>{{ student.paid_months }}</td>
+                    <td {% if student.pending_months > 0 %}class="pending-pulse"{% endif %}>
+                        {{ student.pending_months }}
+                    </td>
+                    <td>Rs. {{ "%.2f"|format(student.total_paid) }}</td>
+                    <td {% if student.pending_amount > 0 %}class="pending-pulse"{% endif %}>
+                        Rs. {{ "%.2f"|format(student.pending_amount) }}
+                    </td>
+                    <td class="action-buttons">
+                        <button class="btn-icon btn-edit" onclick="openEditModal({{ student.id }}, '{{ student.name|replace("'", "\\'") }}', '{{ student.class }}', {{ student.monthly_fee }})" title="Edit Student">Edit</button>
+                        <button class="btn-icon btn-payment" onclick="openPaymentModal({{ student.id }}, '{{ student.name|replace("'", "\\'") }}')" title="Record Payment">Payment</button>
+                        <button class="btn-icon btn-receipt" onclick="openReceiptMenu({{ student.id }}, '{{ student.name|replace("'", "\\'") }}')" title="Receipt Options">Receipt</button>
+                        <button class="btn-icon btn-delete" onclick="deleteStudent({{ student.id }}, '{{ student.name|replace("'", "\\'") }}')" title="Delete Student">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div id="addModal" class="modal">
+    <div class="modal-content modal-slide-in">
+        <div class="modal-header">
+            <h2>Add New Student</h2>
+            <button class="close-btn" onclick="closeModal('addModal')">&times;</button>
+        </div>
+        <form id="addForm">
+            <div class="form-group">
+                <label for="addName">Student Name</label>
+                <input type="text" id="addName" name="name" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label for="addClass">Class</label>
+                <select id="addClass" name="class" class="form-select" required>
+                    {% for class in classes %}
+                    <option value="{{ class }}">{{ class }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="addFee">Monthly Fee (Rs.)</label>
+                <input type="number" id="addFee" name="monthly_fee" class="form-input" step="0.01" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Student</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Student Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content modal-slide-in">
+        <div class="modal-header">
+            <h2>Edit Student</h2>
+            <button class="close-btn" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <form id="editForm">
+            <input type="hidden" id="editId">
+            <div class="form-group">
+                <label for="editName">Student Name</label>
+                <input type="text" id="editName" name="name" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label for="editClass">Class</label>
+                <select id="editClass" name="class" class="form-select" required>
+                    {% for class in classes %}
+                    <option value="{{ class }}">{{ class }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editFee">Monthly Fee (Rs.)</label>
+                <input type="number" id="editFee" name="monthly_fee" class="form-input" step="0.01" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content modal-slide-in">
+        <div class="modal-header">
+            <h2>Record Payment</h2>
+            <button class="close-btn" onclick="closeModal('paymentModal')">&times;</button>
+        </div>
+        <form id="paymentForm">
+            <input type="hidden" id="paymentStudentId">
+            <div class="form-group">
+                <label>Student: <strong id="paymentStudentName"></strong></label>
+            </div>
+            <div class="form-group">
+                <label for="paymentAmount">Amount (Rs.)</label>
+                <input type="number" id="paymentAmount" name="amount" class="form-input" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="paymentMethod">Payment Method</label>
+                <select id="paymentMethod" name="payment_method" class="form-select" required>
+                    <option value="Cash">Cash</option>
+                    <option value="Easypaisa">Easypaisa</option>
+                    <option value="JazzCash">JazzCash</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="monthYear">Month/Year</label>
+                <input type="month" id="monthYear" name="month_year" class="form-input" required>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('paymentModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Record Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Receipt Menu Modal -->
+<div id="receiptMenuModal" class="modal">
+    <div class="modal-content modal-slide-in" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2>Receipt Options</h2>
+            <button class="close-btn" onclick="closeModal('receiptMenuModal')">&times;</button>
+        </div>
+        <div style="padding: 1rem 0;">
+            <p style="margin-bottom: 1.5rem; color: var(--text-light);">
+                Student: <strong id="receiptStudentName"></strong>
+            </p>
+            <input type="hidden" id="receiptStudentId">
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button class="btn btn-primary" onclick="printReceipt()" style="width: 100%;">
+                    Print Receipt
+                </button>
+                <button class="btn btn-secondary" onclick="downloadReceipt()" style="width: 100%;">
+                    Download PDF
+                </button>
+                <button class="btn btn-accent" onclick="closeModal('receiptMenuModal')" style="width: 100%;">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterByClass() {
+    const classFilter = document.getElementById('classFilter').value;
+    window.location.href = `/students${classFilter ? '?class=' + encodeURIComponent(classFilter) : ''}`;
+}
+
+function openAddModal() {
+    playSound('click');
+    document.getElementById('addModal').classList.add('active');
+}
+
+function openEditModal(id, name, className, fee) {
+    playSound('click');
+    document.getElementById('editId').value = id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editClass').value = className;
+    document.getElementById('editFee').value = fee;
+    document.getElementById('editModal').classList.add('active');
+}
+
+function openPaymentModal(id, name) {
+    playSound('click');
+    document.getElementById('paymentStudentId').value = id;
+    document.getElementById('paymentStudentName').textContent = name;
+    const today = new Date();
+    document.getElementById('monthYear').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    document.getElementById('paymentModal').classList.add('active');
+}
+
+function closeModal(modalId) {
+    playSound('click');
+    document.getElementById(modalId).classList.remove('active');
+}
+
+function openReceiptMenu(id, name) {
+    playSound('click');
+    document.getElementById('receiptStudentId').value = id;
+    document.getElementById('receiptStudentName').textContent = name;
+    document.getElementById('receiptMenuModal').classList.add('active');
+}
+
+function printReceipt() {
+    playSound('click');
+    const id = document.getElementById('receiptStudentId').value;
+    const url = `/students/${id}/receipt`;
+    
+    // Open in new window for printing
+    const printWindow = window.open(url, '_blank');
+    if (printWindow) {
+        printWindow.onload = function() {
+            setTimeout(function() {
+                printWindow.print();
+            }, 500);
+        };
+    }
+    
+    closeModal('receiptMenuModal');
+}
+
+function downloadReceipt() {
+    playSound('click');
+    const id = document.getElementById('receiptStudentId').value;
+    const url = `/students/${id}/receipt`;
+    
+    // Open URL - backend will force download with as_attachment=True
+    window.location.href = url;
+    
+    closeModal('receiptMenuModal');
+}
+
+function viewReceipt(id) {
+    playSound('click');
+    const url = `/students/${id}/receipt`;
+    window.open(url, '_blank');
+}
+
+async function deleteStudent(id, name) {
+    if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+    
+    playSound('click');
+    
+    try {
+        const response = await fetch(`/students/delete/${id}`, { method: 'POST' });
+        const data = await response.json();
+        
+        if (data.success) {
+            playSound('success');
+            location.reload();
+        }
+    } catch (error) {
+        playSound('error');
+        alert('An error occurred');
+    }
+}
+
+document.getElementById('addForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    playSound('click');
+    
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await fetch('/students/add', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            playSound('success');
+            location.reload();
+        }
+    } catch (error) {
+        playSound('error');
+        alert('An error occurred');
+    }
+});
+
+document.getElementById('editForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    playSound('click');
+    
+    const id = document.getElementById('editId').value;
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await fetch(`/students/edit/${id}`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            playSound('success');
+            location.reload();
+        }
+    } catch (error) {
+        playSound('error');
+        alert('An error occurred');
+    }
+});
+
+document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    playSound('click');
+    
+    const id = document.getElementById('paymentStudentId').value;
+    const formData = new FormData(e.target);
+    
+    try {
+        const response = await fetch(`/students/${id}/payment`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            playSound('success');
+            location.reload();
+        }
+    } catch (error) {
+        playSound('error');
+        alert('An error occurred');
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Academy Management{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Financial Reports</h1>
+    
+    <div class="report-section card-enter">
+        <div class="report-header">
+            <h2>Class-wise Fee Summary</h2>
+            <button class="btn btn-secondary" onclick="printReport()">Print Report</button>
+        </div>
+        
+        <div class="table-container">
+            <table class="data-table" id="classReport">
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Students</th>
+                        <th>Total Collected</th>
+                        <th>Total Pending</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for summary in class_summary %}
+                    <tr>
+                        <td>{{ summary.class }}</td>
+                        <td>{{ summary.students }}</td>
+                        <td>Rs. {{ "%.2f"|format(summary.collected) }}</td>
+                        <td {% if summary.pending > 0 %}class="pending-pulse"{% endif %}>
+                            Rs. {{ "%.2f"|format(summary.pending) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="2"><strong>Total</strong></td>
+                        <td><strong>Rs. {{ "%.2f"|format(class_summary|sum(attribute='collected')) }}</strong></td>
+                        <td><strong>Rs. {{ "%.2f"|format(class_summary|sum(attribute='pending')) }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function printReport() {
+    playSound('click');
+    window.print();
+}
+</script>
+
+<style>
+@media print {
+    .navbar, .btn, .page-header button, .sound-toggle {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+    
+    .container {
+        max-width: 100%;
+    }
+    
+    .report-header {
+        margin-bottom: 20px;
+        border-bottom: 2px solid #000;
+    }
+    
+    .report-header h2 {
+        color: #000;
+    }
+    
+    .table-container {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}
+</style>
+{% endblock %}
