@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: perfect-science-academy
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "cd academy_management2 && gunicorn academy_management2.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
